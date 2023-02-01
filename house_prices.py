@@ -22,21 +22,24 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_val_score
 
+from src.functions import fill_all_missing_values
+from src.functions import encode_catagorical_columns
+
 # Load data
 
-train_data = pd.read_csv("raw/data/train.csv")
-test_data = pd.read_csv("raw/data/test.csv")
+train_data = pd.read_csv("data/raw/train.csv")
+test_data = pd.read_csv("data/raw/test.csv")
 test_ids = test_data['Id']
 
 # Some EDA
 
-fig, ax = plt.subplots(figsize=(25,10))
+fig, ax = plt.subplots(figsize=(25, 10))
 sns.heatmap(data=train_data.isnull(), yticklabels=False, ax=ax)
 
-fig, ax = plt.subplots(figsize=(25,10))
+fig, ax = plt.subplots(figsize=(25, 10))
 sns.countplot(x=train_data['SaleCondition'])
 sns.histplot(x=train_data['SaleType'], kde=True, ax=ax)
-sns.violinplot(x=train_data['HouseStyle'], y=train_data['SalePrice'],ax=ax)
+sns.violinplot(x=train_data['HouseStyle'], y=train_data['SalePrice'], ax=ax)
 sns.scatterplot(x=train_data["Foundation"], y=train_data["SalePrice"],
                 palette='deep', ax=ax)
 plt.grid()
@@ -50,22 +53,6 @@ train_data['BsmtFinType1'].fillna("No", inplace=True)
 train_data['BsmtFinType2'].fillna("No", inplace=True)
 train_data['BsmtFinType2'].fillna("None", inplace=True)
 
-def fill_all_missing_values(data):
-    '''Def to fill all missing values
-    
-    Params:
-        data train
-
-    Returns:
-        DataFrame with all missing values filled in
-    '''
-    for col in data.columns:
-        if data[col].dtype == ('int64','float64'):
-            data[col].fillna(data[col].mean(), inplace=True)
-        else:
-            data[col].fillna(data[col].mode()[0], inplace=True)
-
-
 fill_all_missing_values(train_data)
 fill_all_missing_values(test_data)
 
@@ -75,11 +62,10 @@ drop_col = ['Id', 'Alley', 'PoolQC', 'MiscFeature', 'Fence', 'MoSold',
             'YrSold', 'MSSubClass', 'GarageType', 'GarageArea', 'GarageYrBlt',
             'GarageFinish', 'YearRemodAdd', 'LandSlope', 'BsmtUnfSF',
             'BsmtExposure', '2ndFlrSF', 'LowQualFinSF', 'Condition1',
-            'Condition2', 'Heating','Exterior1st', 'Exterior2nd', 'HouseStyle',
-            'LotShape', 'LandContour', 'LotConfig', 'Functional', 'BsmtFinSF1',
-            'BsmtFinSF2', 'FireplaceQu', 'WoodDeckSF', 'GarageQual',
-            'GarageCond', 'OverallCond'
-           ]
+            'Condition2', 'Heating', 'Exterior1st', 'Exterior2nd',
+            'HouseStyle', 'LotShape', 'LandContour', 'LotConfig', 'Functional',
+            'BsmtFinSF1', 'BsmtFinSF2', 'FireplaceQu', 'WoodDeckSF',
+            'GarageQual', 'GarageCond', 'OverallCond']
 
 train_data.drop(drop_col, axis=1, inplace=True)
 test_data.drop(drop_col, axis=1, inplace=True)
@@ -159,57 +145,52 @@ test_data['Neighborhood'] = OE.transform(test_data[['Neighborhood']])
 OE = OrdinalEncoder(categories=[['None', 'BrkCmn', 'BrkFace', 'Stone']])
 train_data['MasVnrType'] = OE.fit_transform(train_data[['MasVnrType']])
 test_data['MasVnrType'] = OE.transform(test_data[['MasVnrType']])
-OE = OrdinalEncoder(categories=[['AdjLand', 'Abnorml','Alloca', 'Family',
+OE = OrdinalEncoder(categories=[['AdjLand', 'Abnorml', 'Alloca', 'Family',
                                  'Normal', 'Partial']])
 train_data['SaleCondition'] = OE.fit_transform(train_data[['SaleCondition']])
 test_data['SaleCondition'] = OE.transform(test_data[['SaleCondition']])
 
-OE = OrdinalEncoder(categories=[['Gambrel', 'Gable','Hip', 'Mansard', 'Flat',
+OE = OrdinalEncoder(categories=[['Gambrel', 'Gable', 'Hip', 'Mansard', 'Flat',
                                  'Shed']])
 train_data['RoofStyle'] = OE.fit_transform(train_data[['RoofStyle']])
 test_data['RoofStyle'] = OE.transform(test_data[['RoofStyle']])
 
-OE = OrdinalEncoder(categories=[['ClyTile', 'CompShg', 'Roll','Metal',
-                                 'Tar&Grv','Membran', 'WdShake', 'WdShngl']])
+OE = OrdinalEncoder(categories=[['ClyTile', 'CompShg', 'Roll', 'Metal',
+                                 'Tar&Grv', 'Membran', 'WdShake', 'WdShngl']])
 train_data['RoofMatl'] = OE.fit_transform(train_data[['RoofMatl']])
 test_data['RoofMatl'] = OE.transform(test_data[['RoofMatl']])
 
-Level_col = ['Street' ,'BldgType', 'SaleType', 'CentralAir']
+Level_col = ['Street', 'BldgType', 'SaleType', 'CentralAir']
 
 encoder = LabelEncoder()
-def encode_catagorical_columns(train, test):
-    '''Def to encode catagorical columns
-    
-    Params:
-        train: train data
-        test: test data
 
-    Returns:
-        DataFrame with encode catagorical columns
-    '''
-    for col in Level_col:
-        train[col] = encoder.fit_transform(train[col])
-        test[col]  = encoder.transform(test[col])
-encode_catagorical_columns(train_data, test_data)
+encode_catagorical_columns(train_data, test_data, Level_col)
 
 train_data['BsmtRating'] = train_data['BsmtCond'] * train_data['BsmtQual']
 train_data['ExterRating'] = train_data['ExterCond'] * train_data['ExterQual']
-train_data['BsmtFinTypeRating'] = train_data['BsmtFinType1'] * train_data['BsmtFinType2']
+train_data['BsmtFinTypeRating'] = train_data['BsmtFinType1'] \
+                                   * train_data['BsmtFinType2']
 
-train_data['BsmtBath'] = train_data['BsmtFullBath'] + train_data['BsmtHalfBath']
+train_data['BsmtBath'] = train_data['BsmtFullBath']\
+                         + train_data['BsmtHalfBath']
 train_data['Bath'] = train_data['FullBath'] + train_data['HalfBath']
 
-train_data['PorchArea']=train_data['OpenPorchSF']+train_data['EnclosedPorch']
-train_data['PorchArea']=train_data['PorchArea']+train_data['3SsnPorch']+train_data['ScreenPorch']
+train_data['PorchArea'] = train_data['OpenPorchSF'] \
+                           + train_data['EnclosedPorch'] \
+                           + train_data['3SsnPorch'] \
+                           + train_data['ScreenPorch']
 
 test_data['BsmtRating'] = test_data['BsmtCond'] * test_data['BsmtQual']
-test_data['ExterRating'] = test_data['ExterCond'] * test_data['ExterQual']
-test_data['BsmtFinTypeRating'] = test_data['BsmtFinType1'] * test_data['BsmtFinType2']
+test_data['ExterRating'] = test_data['ExterCond'] \
+                           * test_data['ExterQual']
+test_data['BsmtFinTypeRating'] = test_data['BsmtFinType1'] \
+                                 * test_data['BsmtFinType2']
 
 test_data['BsmtBath'] = test_data['BsmtFullBath'] + test_data['BsmtHalfBath']
 test_data['Bath'] = test_data['FullBath'] + test_data['HalfBath']
-test_data['PorchArea']=test_data['OpenPorchSF']+test_data['EnclosedPorch']
-test_data['PorchArea']=test_data['PorchArea']+test_data['3SsnPorch']+test_data['ScreenPorch']
+test_data['PorchArea'] = test_data['OpenPorchSF']\
+                         + test_data['EnclosedPorch']\
+                         + test_data['3SsnPorch'] + test_data['ScreenPorch']
 
 drop_col = ['OverallQual',
             'ExterCond', 'ExterQual',
@@ -218,11 +199,13 @@ drop_col = ['OverallQual',
             'HeatingQC',
             'OpenPorchSF', 'EnclosedPorch', '3SsnPorch', 'ScreenPorch',
             'BsmtFullBath', 'BsmtHalfBath',
-            'FullBath', 'HalfBath',
-           ]
+            'FullBath', 'HalfBath']
 
 train_data.drop(drop_col, axis=1, inplace=True)
 test_data.drop(drop_col, axis=1, inplace=True)
+
+train_data.to_feather('data/clean/train_clean.feather')
+test_data.to_feather('data/clean/test_clean.feather')
 
 print(train_data.shape)
 
@@ -232,7 +215,7 @@ y = train_data['SalePrice']
 X = train_data.drop(['SalePrice'], axis=1)
 
 candidate_max_leaf_nodes = [250]
-#model = LinearRegression()
+# model = LinearRegression()
 
 for node in candidate_max_leaf_nodes:
     model = RandomForestRegressor(max_leaf_nodes=node,)
@@ -247,5 +230,5 @@ submission = pd.DataFrame({
     "SalePrice": price
 })
 
-submission.to_csv("submission.csv", index=False)
+submission.to_csv("results/submission.csv", index=False)
 submission.sample(10)

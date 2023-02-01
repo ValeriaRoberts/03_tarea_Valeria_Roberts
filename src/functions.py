@@ -25,7 +25,7 @@ def fill_all_missing_values(data):
         else:
             data[col].fillna(data[col].mode()[0], inplace=True)
 
-def encode_catagorical_columns(train, test, level_col):
+def encode_catagorical_columns(train, test, Level_col):
     '''Def to encode catagorical columns
     
     Params:
