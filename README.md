@@ -17,10 +17,10 @@ In the folder data you can find the data used to train the model. We have the ra
 ### [Results](https://github.com/ValeriaRoberts/House-Prices-regression/tree/main/results)
 In the folder results you can find a .csv file with a preview of the results given by the regression.
 
-### [src](https://github.com/ValeriaRoberts/03_tarea_Valeria_Roberts/tree/main/data/src)
+### [src](https://github.com/ValeriaRoberts/House-Prices-regression/tree/main/src)
 In the folder src you can find the complementary functions used for the main regression code.
 
-### [test](https://github.com/ValeriaRoberts/03_tarea_Valeria_Roberts/tree/main/data/test)
+### [test](https://github.com/ValeriaRoberts/03_tarea_Valeria_Roberts/tree/main/test)
 In the folder test you can find complementary files to corraborate results, and make sure the code is runing correctly.
 
 ## ```Requirements```
