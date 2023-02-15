@@ -2,7 +2,7 @@
 
 In this repository you can find a developed regression model for House Prices.
 
-## 👉 ```Index```
+## ```Index:```
 
 ### [Data](https://github.com/ValeriaRoberts/03_tarea_Valeria_Roberts/tree/main/data)
 * Raw
@@ -23,7 +23,7 @@ In the folder src you can find the complementary functions used for the main reg
 ### [test](https://github.com/ValeriaRoberts/03_tarea_Valeria_Roberts/tree/main/test)
 In the folder test you can find complementary files to corraborate results, and make sure the code is runing correctly.
 
-## ```Requirements```
+## ```Requirements:```
 To run the repository, make sure you have installed the packages and specific versions from the file of [requirements](https://github.com/ValeriaRoberts/03_tarea_Valeria_Roberts/tree/main/requirements.txt)
 
 ## Bibliography: 
